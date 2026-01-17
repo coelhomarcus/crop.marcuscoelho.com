@@ -7,7 +7,12 @@ import "react-image-crop/dist/ReactCrop.css";
 import { getCroppedImage, getFileExtension } from "../utils/imageProcessor";
 import { cropGif, formatFileSize } from "../utils/gifProcessor";
 import { ASPECT_RATIOS } from "../hooks/useCrop";
-import { CropHeader, CropSidebar, CropPreviewModal, MobileFloatingButtons } from "./crop";
+import {
+  CropHeader,
+  CropSidebar,
+  CropPreviewModal,
+  MobileFloatingButtons,
+} from "./crop";
 
 type AspectRatioKey = keyof typeof ASPECT_RATIOS;
 
@@ -24,7 +29,7 @@ interface PreviewResult {
 
 export function CropPage() {
   const navigate = useNavigate();
-  
+
   // Image state
   const [imageSrc, setImageSrc] = useState<string | undefined>();
   const [fileName, setFileName] = useState<string>("");
@@ -33,7 +38,7 @@ export function CropPage() {
   const [originalSize, setOriginalSize] = useState(0);
   const [imageWidth, setImageWidth] = useState(0);
   const [imageHeight, setImageHeight] = useState(0);
-  
+
   // Crop state
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
@@ -43,19 +48,22 @@ export function CropPage() {
   const [heightInput, setHeightInput] = useState("");
   const [customAspectW, setCustomAspectW] = useState("");
   const [customAspectH, setCustomAspectH] = useState("");
-  
+
   // Processing state
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
   const [preview, setPreview] = useState<PreviewResult | null>(null);
-  
+
   // GIF settings
-  const [gifSettings, setGifSettings] = useState<GifSettings>({ colors: 256, skipFrames: 1 });
+  const [gifSettings, setGifSettings] = useState<GifSettings>({
+    colors: 256,
+    skipFrames: 1,
+  });
   const [showGifSettings, setShowGifSettings] = useState(false);
-  
+
   // Mobile sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
+
   // Refs
   const imgRef = useRef<HTMLImageElement>(null);
   const fileRef = useRef<File | null>(null);
@@ -85,9 +93,11 @@ export function CropPage() {
     // Convert base64 to File for GIF processing
     if (storedFileType === "image/gif" && storedImage) {
       fetch(storedImage)
-        .then(res => res.blob())
-        .then(blob => {
-          fileRef.current = new File([blob], storedFileName || "image.gif", { type: "image/gif" });
+        .then((res) => res.blob())
+        .then((blob) => {
+          fileRef.current = new File([blob], storedFileName || "image.gif", {
+            type: "image/gif",
+          });
         });
     }
   }, [navigate]);
@@ -147,10 +157,10 @@ export function CropPage() {
         setAspectRatio(w / h);
         createCenteredCrop(w / h);
       } else {
-        setAspectRatio(1);
-        setCustomAspectW("1");
-        setCustomAspectH("1");
-        createCenteredCrop(1);
+        setAspectRatio(988 / 180);
+        setCustomAspectW("988");
+        setCustomAspectH("180");
+        createCenteredCrop(988 / 180);
       }
     } else {
       const ratio = ASPECT_RATIOS[key];
@@ -180,38 +190,41 @@ export function CropPage() {
     }
   };
 
-  const setCropDimensions = useCallback((width: number, height: number) => {
-    if (!imgRef.current) return;
-    const img = imgRef.current;
-    const maxWidth = img.width;
-    const maxHeight = img.height;
+  const setCropDimensions = useCallback(
+    (width: number, height: number) => {
+      if (!imgRef.current) return;
+      const img = imgRef.current;
+      const maxWidth = img.width;
+      const maxHeight = img.height;
 
-    const clampedWidth = Math.min(Math.max(1, width), maxWidth);
-    const clampedHeight = Math.min(Math.max(1, height), maxHeight);
+      const clampedWidth = Math.min(Math.max(1, width), maxWidth);
+      const clampedHeight = Math.min(Math.max(1, height), maxHeight);
 
-    const x = crop?.x ?? 0;
-    const y = crop?.y ?? 0;
-    const finalX = Math.min(x, maxWidth - clampedWidth);
-    const finalY = Math.min(y, maxHeight - clampedHeight);
+      const x = crop?.x ?? 0;
+      const y = crop?.y ?? 0;
+      const finalX = Math.min(x, maxWidth - clampedWidth);
+      const finalY = Math.min(y, maxHeight - clampedHeight);
 
-    const newCrop: Crop = {
-      unit: "px",
-      x: Math.max(0, finalX),
-      y: Math.max(0, finalY),
-      width: clampedWidth,
-      height: clampedHeight,
-    };
+      const newCrop: Crop = {
+        unit: "px",
+        x: Math.max(0, finalX),
+        y: Math.max(0, finalY),
+        width: clampedWidth,
+        height: clampedHeight,
+      };
 
-    setCrop(newCrop);
-    setCompletedCrop({
-      unit: "px",
-      x: Math.max(0, finalX),
-      y: Math.max(0, finalY),
-      width: clampedWidth,
-      height: clampedHeight,
-    });
-    setPreview(null);
-  }, [crop?.x, crop?.y]);
+      setCrop(newCrop);
+      setCompletedCrop({
+        unit: "px",
+        x: Math.max(0, finalX),
+        y: Math.max(0, finalY),
+        width: clampedWidth,
+        height: clampedHeight,
+      });
+      setPreview(null);
+    },
+    [crop?.x, crop?.y],
+  );
 
   const handleWidthChange = (value: string) => {
     setWidthInput(value);
@@ -354,22 +367,22 @@ export function CropPage() {
 
         {/* Crop area */}
         <div className="flex-1 bg-[#0d0e14] flex items-center justify-center p-2 md:p-4 overflow-auto">
-          <ReactCrop 
-            crop={crop} 
-            onChange={(c) => setCrop(c)} 
-            onComplete={(c) => setCompletedCrop(c)} 
+          <ReactCrop
+            crop={crop}
+            onChange={(c) => setCrop(c)}
+            onComplete={(c) => setCompletedCrop(c)}
             aspect={aspectRatio}
           >
-            <img 
-              ref={imgRef} 
-              src={imageSrc} 
-              alt="Image to crop" 
-              className="max-w-full" 
-              style={{ maxHeight: "calc(100vh - 80px)" }} 
+            <img
+              ref={imgRef}
+              src={imageSrc}
+              alt="Image to crop"
+              className="max-w-full"
+              style={{ maxHeight: "calc(100vh - 80px)" }}
             />
           </ReactCrop>
         </div>
-        
+
         <MobileFloatingButtons
           canGenerate={!!canGenerate}
           isProcessing={isProcessing}
