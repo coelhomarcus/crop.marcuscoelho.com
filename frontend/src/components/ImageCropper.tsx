@@ -1,8 +1,18 @@
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useCrop, ASPECT_RATIOS } from "../hooks/useCrop";
-import { Upload, Download, Crop, X, Loader2, Settings } from "lucide-react";
+import {
+  Upload,
+  Download,
+  Crop,
+  X,
+  Loader2,
+  Settings,
+  CheckCircle,
+  FileImage,
+  FileDown,
+} from "lucide-react";
 
 type AspectRatioKey = keyof typeof ASPECT_RATIOS;
 
@@ -36,13 +46,24 @@ export function ImageCropper() {
     originalSizeFormatted,
   } = useCrop();
 
-  const [customFileName, setCustomFileName] = useState("");
-  const [selectedAspect, setSelectedAspect] = useState<AspectRatioKey>("free");
+  const [selectedAspect, setSelectedAspect] = useState<AspectRatioKey>("Livre");
   const [widthInput, setWidthInput] = useState("");
   const [heightInput, setHeightInput] = useState("");
   const [showGifSettings, setShowGifSettings] = useState(false);
 
+  const previewRef = useRef<HTMLDivElement>(null);
+
   const canGenerate = completedCrop && !isProcessing;
+
+  // Auto scroll to preview when it appears
+  useEffect(() => {
+    if (preview && previewRef.current) {
+      previewRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [preview]);
 
   const handleAspectChange = (key: AspectRatioKey) => {
     setSelectedAspect(key);
@@ -73,9 +94,10 @@ export function ImageCropper() {
     }
   };
 
-  const compressionRatio = preview && originalSize > 0 
-    ? ((1 - preview.size / originalSize) * 100).toFixed(1)
-    : null;
+  const compressionRatio =
+    preview && originalSize > 0
+      ? ((1 - preview.size / originalSize) * 100).toFixed(1)
+      : null;
 
   return (
     <div className="min-h-screen bg-[#f8f9fa]">
@@ -103,7 +125,10 @@ export function ImageCropper() {
                 onChange={onSelectFile}
                 className="hidden"
               />
-              <Upload className="w-16 h-16 mx-auto mb-4 text-gray-400" strokeWidth={1.5} />
+              <Upload
+                className="w-16 h-16 mx-auto mb-4 text-gray-400"
+                strokeWidth={1.5}
+              />
               <p className="text-lg font-medium text-gray-700 mb-2">
                 Envie sua imagem
               </p>
@@ -120,18 +145,22 @@ export function ImageCropper() {
             {/* File Info Bar */}
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  isGif 
-                    ? "bg-purple-100 text-purple-700" 
-                    : "bg-blue-100 text-blue-700"
-                }`}>
+                <span
+                  className={`px-2 py-1 rounded text-xs font-medium ${
+                    isGif
+                      ? "bg-purple-100 text-purple-700"
+                      : "bg-blue-100 text-blue-700"
+                  }`}
+                >
                   {isGif ? "GIF" : "Image"}
                 </span>
                 <span className="text-sm text-gray-600">
                   {imageWidth} × {imageHeight} px
                 </span>
                 <span className="text-sm text-gray-400">|</span>
-                <span className="text-sm text-gray-600">{originalSizeFormatted}</span>
+                <span className="text-sm text-gray-600">
+                  {originalSizeFormatted}
+                </span>
               </div>
               <button
                 onClick={clearImage}
@@ -151,19 +180,21 @@ export function ImageCropper() {
                     Aspect Ratio
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {(Object.keys(ASPECT_RATIOS) as AspectRatioKey[]).map((key) => (
-                      <button
-                        key={key}
-                        onClick={() => handleAspectChange(key)}
-                        className={`px-3 py-1.5 text-sm rounded-md border transition-all ${
-                          selectedAspect === key
-                            ? "bg-blue-600 text-white border-blue-600"
-                            : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
-                        }`}
-                      >
-                        {key}
-                      </button>
-                    ))}
+                    {(Object.keys(ASPECT_RATIOS) as AspectRatioKey[]).map(
+                      (key) => (
+                        <button
+                          key={key}
+                          onClick={() => handleAspectChange(key)}
+                          className={`px-3 py-1.5 text-sm rounded-md border transition-all ${
+                            selectedAspect === key
+                              ? "bg-blue-600 text-white border-blue-600"
+                              : "bg-white text-gray-700 border-gray-300 hover:border-blue-400"
+                          }`}
+                        >
+                          {key}
+                        </button>
+                      ),
+                    )}
                   </div>
                 </div>
 
@@ -177,7 +208,10 @@ export function ImageCropper() {
                       <input
                         type="number"
                         placeholder="Width"
-                        value={widthInput || (cropWidth > 0 ? Math.round(cropWidth) : "")}
+                        value={
+                          widthInput ||
+                          (cropWidth > 0 ? Math.round(cropWidth) : "")
+                        }
                         onChange={(e) => handleWidthChange(e.target.value)}
                         className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
@@ -187,7 +221,10 @@ export function ImageCropper() {
                       <input
                         type="number"
                         placeholder="Height"
-                        value={heightInput || (cropHeight > 0 ? Math.round(cropHeight) : "")}
+                        value={
+                          heightInput ||
+                          (cropHeight > 0 ? Math.round(cropHeight) : "")
+                        }
                         onChange={(e) => handleHeightChange(e.target.value)}
                         className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
@@ -209,7 +246,7 @@ export function ImageCropper() {
                       {showGifSettings ? "▲" : "▼"}
                     </span>
                   </button>
-                  
+
                   {showGifSettings && (
                     <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
@@ -222,7 +259,12 @@ export function ImageCropper() {
                           max="256"
                           step="16"
                           value={gifSettings.colors}
-                          onChange={(e) => setGifSettings({ ...gifSettings, colors: parseInt(e.target.value) })}
+                          onChange={(e) =>
+                            setGifSettings({
+                              ...gifSettings,
+                              colors: parseInt(e.target.value),
+                            })
+                          }
                           className="w-full accent-blue-600"
                         />
                         <div className="flex justify-between text-xs text-gray-400 mt-1">
@@ -249,61 +291,41 @@ export function ImageCropper() {
                     ref={imgRef}
                     src={imageSrc}
                     alt="Image to crop"
-                    className="max-w-full max-h-[500px]"
+                    className="max-w-full"
+                    style={{ minHeight: "20vh", maxHeight: "70vh" }}
                   />
                 </ReactCrop>
               </div>
-              
+
               {/* Crop info */}
               {completedCrop && (
                 <p className="text-center text-sm text-gray-500 mt-3">
-                  Tamanho da seleção: {Math.round(cropWidth)} × {Math.round(cropHeight)} px
+                  Tamanho da seleção: {Math.round(cropWidth)} ×{" "}
+                  {Math.round(cropHeight)} px
                 </p>
               )}
             </div>
 
-            {/* File Name & Actions */}
-            <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
-              <div className="flex flex-col sm:flex-row gap-4 items-end">
-                {/* File name input */}
-                <div className="flex-1 w-full">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nome do arquivo de saída
-                  </label>
-                  <div className="flex">
-                    <input
-                      type="text"
-                      placeholder={fileName || "cropped"}
-                      value={customFileName}
-                      onChange={(e) => setCustomFileName(e.target.value)}
-                      className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    <span className="inline-flex items-center px-3 border border-l-0 border-gray-300 bg-gray-50 text-gray-500 text-sm rounded-r-md">
-                      .{isGif ? "gif" : "jpg"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Action buttons */}
-                <div className="flex gap-2 w-full sm:w-auto">
-                  <button
-                    onClick={generatePreview}
-                    disabled={!canGenerate}
-                    className="flex-1 sm:flex-none px-6 py-2 text-sm font-medium bg-blue-600 text-white rounded-md transition-colors hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        {Math.round(processingProgress * 100)}%
-                      </>
-                    ) : (
-                      <>
-                        <Crop className="w-4 h-4" />
-                        Recortar Imagem
-                      </>
-                    )}
-                  </button>
-                </div>
+            {/* Actions */}
+            <div className="p-4">
+              <div className="flex justify-center">
+                <button
+                  onClick={generatePreview}
+                  disabled={!canGenerate}
+                  className="px-6 py-2 text-sm font-medium bg-blue-600 text-white rounded-md transition-colors hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {Math.round(processingProgress * 100)}%
+                    </>
+                  ) : (
+                    <>
+                      <Crop className="w-4 h-4" />
+                      Recortar Imagem
+                    </>
+                  )}
+                </button>
               </div>
 
               {/* Progress */}
@@ -321,47 +343,75 @@ export function ImageCropper() {
 
             {/* Preview Result */}
             {preview && (
-              <div className="bg-white rounded-lg border border-green-200 shadow-sm p-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-green-600 font-medium">Recortado com sucesso!</span>
-                  {compressionRatio && (
-                    <span className={`text-sm ${
-                      parseFloat(compressionRatio) > 0 
-                        ? "text-green-600" 
-                        : "text-orange-600"
-                    }`}>
-                      ({parseFloat(compressionRatio) > 0 ? "−" : "+"}{Math.abs(parseFloat(compressionRatio))}% size)
-                    </span>
-                  )}
+              <div
+                ref={previewRef}
+                className="bg-white rounded-lg border border-gray-200 shadow-sm p-4"
+              >
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold">
+                      Recortado com sucesso!
+                    </h3>
+                    {compressionRatio && (
+                      <p
+                        className={`text-sm ${
+                          parseFloat(compressionRatio) > 0
+                            ? "text-green-600"
+                            : "text-orange-600"
+                        }`}
+                      >
+                        {parseFloat(compressionRatio) > 0
+                          ? "Redução de"
+                          : "Aumento de"}{" "}
+                        {Math.abs(parseFloat(compressionRatio))}% no tamanho
+                      </p>
+                    )}
+                  </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-4 items-start">
-                  {/* Preview image */}
-                  <div className="bg-gray-100 rounded-lg p-3 flex-shrink-0">
-                    <img
-                      src={preview.url}
-                      alt="Preview"
-                      className="max-w-[200px] max-h-[200px] rounded"
-                    />
-                  </div>
-
-                  {/* Info & Download */}
-                  <div className="flex-1 space-y-3">
-                    <div className="text-sm space-y-1">
-                      <p className="text-gray-600">
-                        <span className="font-medium">Tamanho Agora:</span> {preview.sizeFormatted}
-                      </p>
-                      <p className="text-gray-600">
-                        <span className="font-medium">Tamanho Original:</span> {originalSizeFormatted}
-                      </p>
+                {/* Preview Content */}
+                <div>
+                  <div className="flex flex-col items-center gap-6">
+                    {/* Preview Image */}
+                    <div>
+                      <div className="bg-gray-100 rounded-lg p-2">
+                        <img
+                          src={preview.url}
+                          alt="Preview"
+                          className="max-w-[280px] max-h-[280px] rounded-md shadow-sm"
+                        />
+                      </div>
                     </div>
-                    
+
+                    {/* Stats */}
+                    <div className="flex flex-wrap justify-center gap-4 w-full">
+                      <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
+                        <FileImage className="w-4 h-4 text-gray-500" />
+                        <div className="text-sm">
+                          <span className="text-gray-500">Original:</span>{" "}
+                          <span className="font-medium text-gray-700">
+                            {originalSizeFormatted}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 bg-green-100 px-4 py-2 rounded-lg">
+                        <FileDown className="w-4 h-4 text-green-600" />
+                        <div className="text-sm">
+                          <span className="text-green-600">Novo:</span>{" "}
+                          <span className="font-semibold text-green-700">
+                            {preview.sizeFormatted}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Download Button */}
                     <button
                       onClick={downloadResult}
-                      className="px-6 py-2.5 text-sm font-medium bg-green-600 text-white rounded-md transition-colors hover:bg-green-700 flex items-center gap-2"
+                      className="w-full sm:w-auto px-8 py-3 text-base font-medium bg-green-600 text-white rounded-lg transition-all hover:bg-green-700   flex items-center justify-center gap-2"
                     >
-                      <Download className="w-4 h-4" />
-                      Baixar
+                      <Download className="w-5 h-5" />
+                      Baixar Imagem
                     </button>
                   </div>
                 </div>
@@ -372,8 +422,16 @@ export function ImageCropper() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-8 py-4 text-center text-sm text-gray-400 border-t border-gray-200">
-        by <a className="underline text-blue-400 hover:text-blue-600"  href="https://marcuscoelho.com" target="_blank" rel="noopener noreferrer">@coelhomarcus</a>
+      <footer className="pb-8 py-4 text-center text-sm text-gray-400">
+        by{" "}
+        <a
+          className="underline text-blue-400 hover:text-blue-600"
+          href="https://marcuscoelho.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          @coelhomarcus
+        </a>
       </footer>
     </div>
   );

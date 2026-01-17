@@ -3,17 +3,17 @@
 /* Hide number input spinners */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 input[type="number"] {
-  -moz-appearance: textfield;
-  appearance: textfield;
+    -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 /* ReactCrop overrides */
-.ReactCrop__crop-selection {
+/*.ReactCrop__crop-selection {
   border: 2px solid #58a6ff !important;
 }
 
@@ -22,4 +22,4 @@ input[type="number"] {
   border: none !important;
   width: 10px !important;
   height: 10px !important;
-}
+}*/

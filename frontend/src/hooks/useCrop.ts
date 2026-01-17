@@ -46,7 +46,7 @@ export interface UseCropReturn {
 }
 
 const ASPECT_RATIOS = {
-  free: undefined,
+  Livre: undefined,
   "1:1": 1,
   "16:9": 16 / 9,
   "9:16": 9 / 16,
@@ -76,7 +76,7 @@ export function useCrop(): UseCropReturn {
     skipFrames: 1,
   });
   const [preview, setPreview] = useState<PreviewResult | null>(null);
-  
+
   const imgRef = useRef<HTMLImageElement>(null);
   const fileRef = useRef<File | null>(null);
 
@@ -93,14 +93,14 @@ export function useCrop(): UseCropReturn {
   // Create a centered crop with the given aspect ratio
   const createCenteredCrop = useCallback((ratio: number | undefined) => {
     if (!imgRef.current) return;
-    
+
     const img = imgRef.current;
     const imgWidth = img.width;
     const imgHeight = img.height;
-    
+
     let cropW: number;
     let cropH: number;
-    
+
     if (ratio) {
       if (imgWidth / imgHeight > ratio) {
         cropH = imgHeight * 0.8;
@@ -113,10 +113,10 @@ export function useCrop(): UseCropReturn {
       cropW = imgWidth * 0.8;
       cropH = imgHeight * 0.8;
     }
-    
+
     const x = (imgWidth - cropW) / 2;
     const y = (imgHeight - cropH) / 2;
-    
+
     const newCrop: Crop = {
       unit: "px",
       x,
@@ -124,7 +124,7 @@ export function useCrop(): UseCropReturn {
       width: cropW,
       height: cropH,
     };
-    
+
     setCrop(newCrop);
     setCompletedCrop({
       unit: "px",
@@ -135,68 +135,74 @@ export function useCrop(): UseCropReturn {
     });
   }, []);
 
-  const setAspectRatioAndUpdate = useCallback((ratio: number | undefined) => {
-    setAspectRatio(ratio);
-    setPreview(null);
-    
-    if (!imgRef.current) return;
-    
-    if (crop && ratio) {
-      const currentWidth = crop.width;
-      const newHeight = currentWidth / ratio;
-      
-      const img = imgRef.current;
-      let finalWidth = currentWidth;
-      let finalHeight = newHeight;
-      
-      if (newHeight > img.height) {
-        finalHeight = img.height * 0.8;
-        finalWidth = finalHeight * ratio;
+  const setAspectRatioAndUpdate = useCallback(
+    (ratio: number | undefined) => {
+      setAspectRatio(ratio);
+      setPreview(null);
+
+      if (!imgRef.current) return;
+
+      if (crop && ratio) {
+        const currentWidth = crop.width;
+        const newHeight = currentWidth / ratio;
+
+        const img = imgRef.current;
+        let finalWidth = currentWidth;
+        let finalHeight = newHeight;
+
+        if (newHeight > img.height) {
+          finalHeight = img.height * 0.8;
+          finalWidth = finalHeight * ratio;
+        }
+
+        const x = Math.min(crop.x, img.width - finalWidth);
+        const y = Math.min(crop.y, img.height - finalHeight);
+
+        const newCrop: Crop = {
+          unit: "px",
+          x: Math.max(0, x),
+          y: Math.max(0, y),
+          width: finalWidth,
+          height: finalHeight,
+        };
+
+        setCrop(newCrop);
+        setCompletedCrop({
+          unit: "px",
+          x: Math.max(0, x),
+          y: Math.max(0, y),
+          width: finalWidth,
+          height: finalHeight,
+        });
+      } else if (!crop && ratio) {
+        createCenteredCrop(ratio);
       }
-      
-      const x = Math.min(crop.x, img.width - finalWidth);
-      const y = Math.min(crop.y, img.height - finalHeight);
-      
-      const newCrop: Crop = {
-        unit: "px",
-        x: Math.max(0, x),
-        y: Math.max(0, y),
-        width: finalWidth,
-        height: finalHeight,
-      };
-      
-      setCrop(newCrop);
-      setCompletedCrop({
-        unit: "px",
-        x: Math.max(0, x),
-        y: Math.max(0, y),
-        width: finalWidth,
-        height: finalHeight,
-      });
-    } else if (!crop && ratio) {
-      createCenteredCrop(ratio);
-    }
-  }, [crop, createCenteredCrop]);
+    },
+    [crop, createCenteredCrop],
+  );
 
-  const onSelectFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      fileRef.current = file;
-      setImageType(file.type);
-      setIsGif(file.type === "image/gif");
-      setOriginalSize(file.size);
-      const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
-      setFileName(nameWithoutExt);
-      resetCrop();
-      setGifSettings({ colors: 256, skipFrames: 1 });
+  const onSelectFile = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files && e.target.files.length > 0) {
+        const file = e.target.files[0];
+        fileRef.current = file;
+        setImageType(file.type);
+        setIsGif(file.type === "image/gif");
+        setOriginalSize(file.size);
+        const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+        setFileName(nameWithoutExt);
+        resetCrop();
+        setGifSettings({ colors: 256, skipFrames: 1 });
 
-      const reader = new FileReader();
-      reader.addEventListener("load", () => {
-        setImageSrc(reader.result as string);
-      });
-      reader.readAsDataURL(file);
-    }
-  }, [resetCrop]);
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          setImageSrc(reader.result as string);
+        });
+        reader.readAsDataURL(file);
+      }
+    },
+    [resetCrop],
+  );
 
   useEffect(() => {
     if (imgRef.current && imageSrc) {
@@ -208,7 +214,7 @@ export function useCrop(): UseCropReturn {
           setTimeout(() => createCenteredCrop(aspectRatio), 0);
         }
       };
-      
+
       if (img.complete) {
         handleImageLoad();
       } else {
@@ -217,40 +223,43 @@ export function useCrop(): UseCropReturn {
     }
   }, [imageSrc, aspectRatio, createCenteredCrop]);
 
-  const setCropDimensions = useCallback((width: number, height: number) => {
-    if (!imgRef.current) return;
-    
-    const img = imgRef.current;
-    const maxWidth = img.width;
-    const maxHeight = img.height;
-    
-    const clampedWidth = Math.min(Math.max(1, width), maxWidth);
-    const clampedHeight = Math.min(Math.max(1, height), maxHeight);
-    
-    const x = crop?.x ?? 0;
-    const y = crop?.y ?? 0;
-    
-    const finalX = Math.min(x, maxWidth - clampedWidth);
-    const finalY = Math.min(y, maxHeight - clampedHeight);
-    
-    const newCrop: Crop = {
-      unit: "px",
-      x: Math.max(0, finalX),
-      y: Math.max(0, finalY),
-      width: clampedWidth,
-      height: clampedHeight,
-    };
-    
-    setCrop(newCrop);
-    setCompletedCrop({
-      unit: "px",
-      x: Math.max(0, finalX),
-      y: Math.max(0, finalY),
-      width: clampedWidth,
-      height: clampedHeight,
-    });
-    setPreview(null);
-  }, [crop?.x, crop?.y]);
+  const setCropDimensions = useCallback(
+    (width: number, height: number) => {
+      if (!imgRef.current) return;
+
+      const img = imgRef.current;
+      const maxWidth = img.width;
+      const maxHeight = img.height;
+
+      const clampedWidth = Math.min(Math.max(1, width), maxWidth);
+      const clampedHeight = Math.min(Math.max(1, height), maxHeight);
+
+      const x = crop?.x ?? 0;
+      const y = crop?.y ?? 0;
+
+      const finalX = Math.min(x, maxWidth - clampedWidth);
+      const finalY = Math.min(y, maxHeight - clampedHeight);
+
+      const newCrop: Crop = {
+        unit: "px",
+        x: Math.max(0, finalX),
+        y: Math.max(0, finalY),
+        width: clampedWidth,
+        height: clampedHeight,
+      };
+
+      setCrop(newCrop);
+      setCompletedCrop({
+        unit: "px",
+        x: Math.max(0, finalX),
+        y: Math.max(0, finalY),
+        width: clampedWidth,
+        height: clampedHeight,
+      });
+      setPreview(null);
+    },
+    [crop?.x, crop?.y],
+  );
 
   const clearImage = useCallback(() => {
     setImageSrc(undefined);
@@ -273,7 +282,7 @@ export function useCrop(): UseCropReturn {
 
     try {
       let result;
-      
+
       if (isGif && fileRef.current) {
         result = await cropGif(imgRef.current, completedCrop, fileRef.current, {
           onProgress: (p) => setProcessingProgress(p),
@@ -281,9 +290,13 @@ export function useCrop(): UseCropReturn {
           skipFrames: gifSettings.skipFrames,
         });
       } else {
-        result = await getCroppedImage(imgRef.current, completedCrop, imageType);
+        result = await getCroppedImage(
+          imgRef.current,
+          completedCrop,
+          imageType,
+        );
       }
-      
+
       setPreview({
         url: result.url,
         size: result.blob.size,
@@ -300,12 +313,12 @@ export function useCrop(): UseCropReturn {
 
   const downloadResult = useCallback(() => {
     if (!preview) return;
-    
+
     const ext = isGif ? "gif" : getFileExtension(imageType);
     const name = fileName || "cropped";
-    
+
     const link = document.createElement("a");
-    link.download = `${name}.${ext}`;
+    link.download = `${name} [crop.marcuscoelho.com].${ext}`;
     link.href = preview.url;
     link.click();
   }, [preview, isGif, imageType, fileName]);
