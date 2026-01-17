@@ -44,6 +44,8 @@ export function ImageCropper() {
   const [widthInput, setWidthInput] = useState("");
   const [heightInput, setHeightInput] = useState("");
   const [showGifSettings, setShowGifSettings] = useState(false);
+  const [customAspectW, setCustomAspectW] = useState("");
+  const [customAspectH, setCustomAspectH] = useState("");
 
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -61,7 +63,39 @@ export function ImageCropper() {
 
   const handleAspectChange = (key: AspectRatioKey) => {
     setSelectedAspect(key);
-    setAspectRatioAndUpdate(ASPECT_RATIOS[key]);
+    if (key === "Personalizado") {
+      // Calculate from current custom values if set
+      const w = parseInt(customAspectW, 10);
+      const h = parseInt(customAspectH, 10);
+      if (!isNaN(w) && !isNaN(h) && w > 0 && h > 0) {
+        setAspectRatioAndUpdate(w / h);
+      } else {
+        // Default to 1:1 until user enters custom values
+        setAspectRatioAndUpdate(1);
+        setCustomAspectW("1");
+        setCustomAspectH("1");
+      }
+    } else {
+      setAspectRatioAndUpdate(ASPECT_RATIOS[key]);
+    }
+  };
+
+  const handleCustomAspectWChange = (value: string) => {
+    setCustomAspectW(value);
+    const w = parseInt(value, 10);
+    const h = parseInt(customAspectH, 10);
+    if (!isNaN(w) && !isNaN(h) && w > 0 && h > 0) {
+      setAspectRatioAndUpdate(w / h);
+    }
+  };
+
+  const handleCustomAspectHChange = (value: string) => {
+    setCustomAspectH(value);
+    const w = parseInt(customAspectW, 10);
+    const h = parseInt(value, 10);
+    if (!isNaN(w) && !isNaN(h) && w > 0 && h > 0) {
+      setAspectRatioAndUpdate(w / h);
+    }
   };
 
   const handleWidthChange = (value: string) => {
@@ -116,6 +150,10 @@ export function ImageCropper() {
             setGifSettings={setGifSettings}
             showGifSettings={showGifSettings}
             setShowGifSettings={setShowGifSettings}
+            customAspectW={customAspectW}
+            customAspectH={customAspectH}
+            onCustomAspectWChange={handleCustomAspectWChange}
+            onCustomAspectHChange={handleCustomAspectHChange}
           />
 
           <CropArea

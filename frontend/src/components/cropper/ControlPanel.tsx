@@ -18,6 +18,10 @@ interface ControlPanelProps {
   setGifSettings: (settings: GifSettings) => void;
   showGifSettings: boolean;
   setShowGifSettings: (show: boolean) => void;
+  customAspectW: string;
+  customAspectH: string;
+  onCustomAspectWChange: (value: string) => void;
+  onCustomAspectHChange: (value: string) => void;
 }
 
 export function ControlPanel({
@@ -34,6 +38,10 @@ export function ControlPanel({
   setGifSettings,
   showGifSettings,
   setShowGifSettings,
+  customAspectW,
+  customAspectH,
+  onCustomAspectWChange,
+  onCustomAspectHChange,
 }: ControlPanelProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
@@ -58,6 +66,27 @@ export function ControlPanel({
               </button>
             ))}
           </div>
+          {selectedAspect === "Personalizado" && (
+            <div className="mt-3 flex items-center gap-2">
+              <input
+                type="number"
+                placeholder="W"
+                value={customAspectW}
+                onChange={(e) => onCustomAspectWChange(e.target.value)}
+                className="w-16 px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                min="1"
+              />
+              <span className="text-gray-600 font-medium">:</span>
+              <input
+                type="number"
+                placeholder="H"
+                value={customAspectH}
+                onChange={(e) => onCustomAspectHChange(e.target.value)}
+                className="w-16 px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                min="1"
+              />
+            </div>
+          )}
         </div>
 
         {/* Right: Manual Size */}

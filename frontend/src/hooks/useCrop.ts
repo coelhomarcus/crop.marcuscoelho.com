@@ -54,6 +54,7 @@ const ASPECT_RATIOS = {
   "3:4": 3 / 4,
   "3:2": 3 / 2,
   "2:3": 2 / 3,
+  Personalizado: -1,
 };
 
 export { ASPECT_RATIOS };
