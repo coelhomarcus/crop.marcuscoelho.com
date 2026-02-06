@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import ReactCrop from "react-image-crop";
-import type { Crop, PixelCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
 import { getCroppedImage, getFileExtension } from "../utils/imageProcessor";
@@ -12,25 +11,18 @@ import {
   CropSidebar,
   CropPreviewModal,
   MobileFloatingButtons,
-} from "./crop";
-
-type AspectRatioKey = keyof typeof ASPECT_RATIOS;
-
-interface GifSettings {
-  colors: number;
-  skipFrames: number;
-}
-
-interface PreviewResult {
-  url: string;
-  size: number;
-  sizeFormatted: string;
-}
+} from "./Crop";
+import type {
+  Crop,
+  PixelCrop,
+  GifSettings,
+  PreviewResult,
+  AspectRatioKey,
+} from "../types";
 
 export function CropPage() {
   const navigate = useNavigate();
 
-  // Image state
   const [imageSrc, setImageSrc] = useState<string | undefined>();
   const [fileName, setFileName] = useState<string>("");
   const [fileType, setFileType] = useState<string>("image/jpeg");
@@ -39,7 +31,6 @@ export function CropPage() {
   const [imageWidth, setImageWidth] = useState(0);
   const [imageHeight, setImageHeight] = useState(0);
 
-  // Crop state
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
   const [aspectRatio, setAspectRatio] = useState<number | undefined>();
@@ -49,22 +40,18 @@ export function CropPage() {
   const [customAspectW, setCustomAspectW] = useState("");
   const [customAspectH, setCustomAspectH] = useState("");
 
-  // Processing state
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
   const [preview, setPreview] = useState<PreviewResult | null>(null);
 
-  // GIF settings
   const [gifSettings, setGifSettings] = useState<GifSettings>({
     colors: 256,
     skipFrames: 1,
   });
   const [showGifSettings, setShowGifSettings] = useState(false);
 
-  // Mobile sidebar state
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Refs
   const imgRef = useRef<HTMLImageElement>(null);
   const fileRef = useRef<File | null>(null);
 
@@ -72,7 +59,6 @@ export function CropPage() {
   const cropHeight = completedCrop?.height ?? 0;
   const canGenerate = completedCrop && !isProcessing;
 
-  // Load image from sessionStorage on mount
   useEffect(() => {
     const storedImage = sessionStorage.getItem("cropImage");
     const storedFileName = sessionStorage.getItem("cropFileName");
@@ -90,7 +76,6 @@ export function CropPage() {
     setIsGif(storedFileType === "image/gif");
     setOriginalSize(parseInt(storedFileSize || "0", 10));
 
-    // Convert base64 to File for GIF processing
     if (storedFileType === "image/gif" && storedImage) {
       fetch(storedImage)
         .then((res) => res.blob())
@@ -102,7 +87,6 @@ export function CropPage() {
     }
   }, [navigate]);
 
-  // Handle image load
   useEffect(() => {
     if (imgRef.current && imageSrc) {
       const img = imgRef.current;
@@ -365,7 +349,6 @@ export function CropPage() {
           onGenerate={generatePreview}
         />
 
-        {/* Crop area */}
         <div className="flex-1 bg-[#0d0e14] flex items-center justify-center p-2 md:p-4 overflow-auto">
           <ReactCrop
             crop={crop}
@@ -377,8 +360,9 @@ export function CropPage() {
               ref={imgRef}
               src={imageSrc}
               alt="Image to crop"
-              className="max-w-full"
+              className="max-w-full select-none"
               style={{ maxHeight: "calc(100vh - 80px)" }}
+              draggable={false}
             />
           </ReactCrop>
         </div>

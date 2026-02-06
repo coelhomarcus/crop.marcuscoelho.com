@@ -8,7 +8,7 @@ export interface CropResult {
 export function getCroppedImage(
   image: HTMLImageElement,
   crop: PixelCrop,
-  imageType: string
+  imageType: string,
 ): Promise<CropResult> {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement("canvas");
@@ -34,7 +34,7 @@ export function getCroppedImage(
       0,
       0,
       crop.width,
-      crop.height
+      crop.height,
     );
 
     canvas.toBlob(
@@ -47,7 +47,7 @@ export function getCroppedImage(
         resolve({ blob, url });
       },
       imageType,
-      0.95
+      0.95,
     );
   });
 }

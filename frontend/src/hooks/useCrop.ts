@@ -2,17 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import type { Crop, PixelCrop } from "react-image-crop";
 import { getCroppedImage, getFileExtension } from "../utils/imageProcessor";
 import { cropGif, formatFileSize } from "../utils/gifProcessor";
-
-export interface PreviewResult {
-  url: string;
-  size: number;
-  sizeFormatted: string;
-}
-
-export interface GifSettings {
-  colors: number;
-  skipFrames: number;
-}
+import type { GifSettings, PreviewResult } from "../types";
 
 export interface UseCropReturn {
   crop: Crop | undefined;
@@ -36,10 +26,8 @@ export interface UseCropReturn {
   setAspectRatioAndUpdate: (ratio: number | undefined) => void;
   imageWidth: number;
   imageHeight: number;
-  // GIF settings
   gifSettings: GifSettings;
   setGifSettings: (settings: GifSettings) => void;
-  // Preview
   preview: PreviewResult | null;
   clearPreview: () => void;
   originalSize: number;
@@ -92,7 +80,6 @@ export function useCrop(): UseCropReturn {
     setPreview(null);
   }, []);
 
-  // Create a centered crop with the given aspect ratio
   const createCenteredCrop = useCallback((ratio: number | undefined) => {
     if (!imgRef.current) return;
 

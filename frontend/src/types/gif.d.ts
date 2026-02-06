@@ -20,8 +20,12 @@ declare module "gif.js" {
   class GIF {
     constructor(options?: GIFOptions);
     addFrame(
-      image: CanvasRenderingContext2D | HTMLCanvasElement | HTMLImageElement | ImageData,
-      options?: FrameOptions
+      image:
+        | CanvasRenderingContext2D
+        | HTMLCanvasElement
+        | HTMLImageElement
+        | ImageData,
+      options?: FrameOptions,
     ): void;
     on(event: "finished", callback: (blob: Blob) => void): void;
     on(event: "error", callback: (error: Error) => void): void;
@@ -73,7 +77,7 @@ declare module "gifenc" {
       indexedPixels: Uint8Array,
       width: number,
       height: number,
-      options?: WriteFrameOptions
+      options?: WriteFrameOptions,
     ): void;
     finish(): void;
     bytes(): Uint8Array;
@@ -81,6 +85,14 @@ declare module "gifenc" {
   }
 
   export function GIFEncoder(): GIFEncoderInstance;
-  export function quantize(rgba: Uint8Array | Uint8ClampedArray, maxColors: number, options?: { format?: string }): number[][];
-  export function applyPalette(rgba: Uint8Array | Uint8ClampedArray, palette: number[][], format?: string): Uint8Array;
+  export function quantize(
+    rgba: Uint8Array | Uint8ClampedArray,
+    maxColors: number,
+    options?: { format?: string },
+  ): number[][];
+  export function applyPalette(
+    rgba: Uint8Array | Uint8ClampedArray,
+    palette: number[][],
+    format?: string,
+  ): Uint8Array;
 }
