@@ -32,6 +32,8 @@ export function CropSidebar({
   onCustomAspectHChange,
   cropX,
   cropY,
+  onCropXChange,
+  onCropYChange,
   onReset,
   gifSettings,
   setGifSettings,
@@ -171,24 +173,26 @@ export function CropSidebar({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-[#6b7280] text-xs mb-1.5">
-                  Posição (Y)
-                </label>
-                <input
-                  type="number"
-                  value={Math.round(cropY)}
-                  readOnly
-                  className="dark-input w-full opacity-60"
-                />
-              </div>
-              <div>
-                <label className="block text-[#6b7280] text-xs mb-1.5">
                   Posição (X)
                 </label>
                 <input
                   type="number"
                   value={Math.round(cropX)}
-                  readOnly
-                  className="dark-input w-full opacity-60"
+                  onChange={(e) => onCropXChange(e.target.value)}
+                  className="dark-input w-full"
+                  placeholder="0"
+                />
+              </div>
+              <div>
+                <label className="block text-[#6b7280] text-xs mb-1.5">
+                  Posição (Y)
+                </label>
+                <input
+                  type="number"
+                  value={Math.round(cropY)}
+                  onChange={(e) => onCropYChange(e.target.value)}
+                  className="dark-input w-full"
+                  placeholder="0"
                 />
               </div>
             </div>

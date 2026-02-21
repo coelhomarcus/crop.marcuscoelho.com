@@ -251,6 +251,36 @@ export function CropPage() {
     }
   };
 
+  const handleCropXChange = (value: string) => {
+    const x = parseInt(value, 10);
+    if (isNaN(x) || x < 0) return;
+    if (!imgRef.current || !completedCrop) return;
+    const { scaleX } = getScale();
+    const displayX = x / scaleX;
+    const maxX = imgRef.current.width - (completedCrop.width ?? 0);
+    const clampedX = Math.min(Math.max(0, displayX), maxX);
+
+    const newCrop: Crop = { ...completedCrop, x: clampedX };
+    setCrop(newCrop);
+    setCompletedCrop({ ...completedCrop, x: clampedX });
+    setPreview(null);
+  };
+
+  const handleCropYChange = (value: string) => {
+    const y = parseInt(value, 10);
+    if (isNaN(y) || y < 0) return;
+    if (!imgRef.current || !completedCrop) return;
+    const { scaleY } = getScale();
+    const displayY = y / scaleY;
+    const maxY = imgRef.current.height - (completedCrop.height ?? 0);
+    const clampedY = Math.min(Math.max(0, displayY), maxY);
+
+    const newCrop: Crop = { ...completedCrop, y: clampedY };
+    setCrop(newCrop);
+    setCompletedCrop({ ...completedCrop, y: clampedY });
+    setPreview(null);
+  };
+
   const handleReset = () => {
     setWidthInput("");
     setHeightInput("");
@@ -355,6 +385,8 @@ export function CropPage() {
           onCustomAspectHChange={handleCustomAspectHChange}
           cropX={(crop?.x ?? 0) * scaleX}
           cropY={(crop?.y ?? 0) * scaleY}
+          onCropXChange={handleCropXChange}
+          onCropYChange={handleCropYChange}
           onReset={handleReset}
           gifSettings={gifSettings}
           setGifSettings={setGifSettings}
