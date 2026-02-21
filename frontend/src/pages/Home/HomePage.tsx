@@ -66,7 +66,7 @@ export function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0d0e14] flex flex-col relative">
+    <div className="min-h-screen bg-black flex flex-col relative">
       <DragOverlay isDragging={isDragging} />
 
       <main className="flex-1 flex items-center justify-center p-4 md:p-6">

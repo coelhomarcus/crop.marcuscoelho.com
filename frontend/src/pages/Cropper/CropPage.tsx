@@ -402,7 +402,7 @@ export function CropPage() {
 
   return (
     <div
-      className="h-screen bg-[#0d0e14] flex flex-col overflow-hidden relative"
+      className="h-screen bg-black flex flex-col overflow-hidden relative"
       {...dragProps}
     >
       <CropHeader
@@ -451,7 +451,7 @@ export function CropPage() {
           onGenerate={generatePreview}
         />
 
-        <div className="flex-1 bg-[#0d0e14] flex items-center justify-center p-2 md:p-4 overflow-auto">
+        <div className="flex-1 bg-black flex items-center justify-center p-2 md:p-4 overflow-auto">
           <ReactCrop
             crop={crop}
             onChange={(c) => setCrop(c)}
@@ -487,13 +487,13 @@ export function CropPage() {
       )}
 
       {isDragging && (
-        <div className="absolute inset-0 z-100 bg-[#0d0e14]/80 flex items-center justify-center pointer-events-none">
-          <div className="border-2 border-dashed border-[#3b82f6] rounded-xl p-12 text-center">
+        <div className="absolute inset-0 z-100 bg-black/80 flex items-center justify-center pointer-events-none">
+          <div className="border border-dashed border-[#3b82f6] p-12 text-center">
             <Upload className="w-12 h-12 text-[#3b82f6] mx-auto mb-3" />
-            <p className="text-[#f3f4f6] text-lg font-medium">
+            <p className="text-[#ededed] text-lg font-medium">
               Solte a imagem aqui
             </p>
-            <p className="text-[#6b7280] text-sm mt-1">
+            <p className="text-[#666666] text-sm mt-1">
               A imagem atual será substituída
             </p>
           </div>

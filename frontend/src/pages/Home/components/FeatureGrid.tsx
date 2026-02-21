@@ -12,7 +12,7 @@ function FeatureItem({ icon, title }: FeatureItemProps) {
       <div className="flex justify-center mb-1 md:mb-2 text-[#3b82f6]">
         {icon}
       </div>
-      <p className="text-xs md:text-sm text-[#9ca3af]">{title}</p>
+      <p className="text-xs md:text-sm text-[#888888]">{title}</p>
     </div>
   );
 }
