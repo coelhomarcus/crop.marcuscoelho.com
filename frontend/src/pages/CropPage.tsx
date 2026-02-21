@@ -55,8 +55,19 @@ export function CropPage() {
   const imgRef = useRef<HTMLImageElement>(null);
   const fileRef = useRef<File | null>(null);
 
-  const cropWidth = completedCrop?.width ?? 0;
-  const cropHeight = completedCrop?.height ?? 0;
+  const getScale = () => {
+    if (!imgRef.current) return { scaleX: 1, scaleY: 1 };
+    return {
+      scaleX: imgRef.current.naturalWidth / imgRef.current.width,
+      scaleY: imgRef.current.naturalHeight / imgRef.current.height,
+    };
+  };
+
+  const cropWidthDisplay = completedCrop?.width ?? 0;
+  const cropHeightDisplay = completedCrop?.height ?? 0;
+  const { scaleX, scaleY } = getScale();
+  const cropWidth = cropWidthDisplay * scaleX;
+  const cropHeight = cropHeightDisplay * scaleY;
   const canGenerate = completedCrop && !isProcessing;
 
   useEffect(() => {
@@ -214,10 +225,13 @@ export function CropPage() {
     setWidthInput(value);
     const width = parseInt(value, 10);
     if (!isNaN(width) && width > 0) {
+      const { scaleX, scaleY } = getScale();
+      const displayWidth = width / scaleX;
       if (aspectRatio) {
-        setCropDimensions(width, Math.round(width / aspectRatio));
+        const actualHeight = Math.round(width / aspectRatio);
+        setCropDimensions(displayWidth, actualHeight / scaleY);
       } else {
-        setCropDimensions(width, cropHeight || 100);
+        setCropDimensions(displayWidth, cropHeightDisplay || 100);
       }
     }
   };
@@ -226,10 +240,13 @@ export function CropPage() {
     setHeightInput(value);
     const height = parseInt(value, 10);
     if (!isNaN(height) && height > 0) {
+      const { scaleX, scaleY } = getScale();
+      const displayHeight = height / scaleY;
       if (aspectRatio) {
-        setCropDimensions(Math.round(height * aspectRatio), height);
+        const actualWidth = Math.round(height * aspectRatio);
+        setCropDimensions(actualWidth / scaleX, displayHeight);
       } else {
-        setCropDimensions(cropWidth || 100, height);
+        setCropDimensions(cropWidthDisplay || 100, displayHeight);
       }
     }
   };
@@ -336,8 +353,8 @@ export function CropPage() {
           customAspectH={customAspectH}
           onCustomAspectWChange={handleCustomAspectWChange}
           onCustomAspectHChange={handleCustomAspectHChange}
-          cropX={crop?.x ?? 0}
-          cropY={crop?.y ?? 0}
+          cropX={(crop?.x ?? 0) * scaleX}
+          cropY={(crop?.y ?? 0) * scaleY}
           onReset={handleReset}
           gifSettings={gifSettings}
           setGifSettings={setGifSettings}

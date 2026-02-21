@@ -54,7 +54,7 @@ export function CropSidebar({
       <aside
         className={`
         fixed lg:relative inset-y-0 left-0 z-50
-        w-[280px] min-w-[280px] bg-[#16171f] flex flex-col border-r border-[#2d2e3a]
+        w-70 min-w-70 bg-[#16171f] flex flex-col border-r border-[#2d2e3a]
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         lg:h-full
