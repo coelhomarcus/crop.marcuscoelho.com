@@ -192,6 +192,8 @@ export function CropPage() {
 
   const handleAspectChange = (key: AspectRatioKey) => {
     setSelectedAspect(key);
+    setWidthInput("");
+    setHeightInput("");
     if (key === "Personalizado") {
       const w = parseInt(customAspectW, 10);
       const h = parseInt(customAspectH, 10);
@@ -214,6 +216,8 @@ export function CropPage() {
 
   const handleCustomAspectWChange = (value: string) => {
     setCustomAspectW(value);
+    setWidthInput("");
+    setHeightInput("");
     const w = parseInt(value, 10);
     const h = parseInt(customAspectH, 10);
     if (!isNaN(w) && !isNaN(h) && w > 0 && h > 0) {
@@ -224,6 +228,8 @@ export function CropPage() {
 
   const handleCustomAspectHChange = (value: string) => {
     setCustomAspectH(value);
+    setWidthInput("");
+    setHeightInput("");
     const w = parseInt(customAspectW, 10);
     const h = parseInt(value, 10);
     if (!isNaN(w) && !isNaN(h) && w > 0 && h > 0) {
@@ -236,6 +242,7 @@ export function CropPage() {
 
   const handleWidthChange = (value: string) => {
     setWidthInput(value);
+    if (aspectRatio) setHeightInput("");
     const width = parseInt(value, 10);
     if (!isNaN(width) && width > 0) {
       const { scaleX, scaleY } = getScale();
@@ -251,6 +258,7 @@ export function CropPage() {
 
   const handleHeightChange = (value: string) => {
     setHeightInput(value);
+    if (aspectRatio) setWidthInput("");
     const height = parseInt(value, 10);
     if (!isNaN(height) && height > 0) {
       const { scaleX, scaleY } = getScale();
@@ -455,7 +463,11 @@ export function CropPage() {
           <ReactCrop
             crop={crop}
             onChange={(c) => setCrop(c)}
-            onComplete={(c) => setCompletedCrop(c)}
+            onComplete={(c) => {
+              setCompletedCrop(c);
+              setWidthInput("");
+              setHeightInput("");
+            }}
             aspect={aspectRatio}
           >
             <img
