@@ -1,80 +1,77 @@
+<div align="center">
+
+<p align="center">
+    <picture>
+        <source media="(prefers-color-scheme: light)" srcset="https://crop.marcuscoelho.com/favicon.ico">
+        <img src="https://crop.marcuscoelho.com/favicon.ico" alt="OpenClaw" width="50">
+    </picture>
+</p>
+
 # Image Crop
 
-Ferramenta simples para recortar imagens e GIFs animados.
+Ferramenta simples e open-source para recortar imagens e GIFs animados.
 
-## Estrutura do Projeto
+Recorte com preview em tempo real, preservando animações de GIF.
 
-Este repositório contém dois projetos independentes:
+<p>
+  <img
+    src="https://img.shields.io/github/stars/coelhomarcus/image-cropper?style=flat-square"
+    alt="GitHub Stars"
+  />
+  <img
+    src="https://img.shields.io/github/last-commit/coelhomarcus/image-cropper?style=flat-square"
+    alt="Last commit"
+  />
+  <img
+    src="https://img.shields.io/github/issues/coelhomarcus/image-cropper?style=flat-square"
+    alt="Open issues"
+  />
+</p>
 
-```
-Crop/
-├── frontend/    # Interface web (React + Vite)
-└── backend/     # API de processamento de GIFs (Node.js + Express)
-```
+</div>
 
-### Frontend
+---
 
-Interface web para upload e recorte de imagens e GIFs.
+## Features
 
-- **Tecnologias**: React, Vite, TypeScript, Tailwind CSS
-- **Porta**: 5175 
+- Recorte de imagens (PNG, JPG, WebP) direto no browser
+- Recorte de **GIFs** animados preservando a animação
+- Preview em tempo real
+- Download do resultado
 
-### Backend
+## Tech Stack
 
-API para processamento e recorte de GIFs animados usando Gifsicle.
+| Category   | Technology                |
+| ---------- | ------------------------- |
+| Frontend   | React + Vite + TypeScript |
+| Styling    | Tailwind CSS              |
+| Backend    | Node.js + Express         |
+| GIF Engine | Gifsicle                  |
+| Runtime    | Node.js 22                |
+| Container  | Docker (multi-stage)      |
 
-- **Tecnologias**: Node.js, Express, TypeScript, Gifsicle
-- **Porta**: 3001
-
-## Deploy no Dokploy
-
-Cada projeto deve ser deployado como uma **Application** separada:
-
-### 1. Deploy do Backend
-
-1. Crie uma nova Application no Dokploy
-2. Aponte para o repositório com **Build Path**: `/backend`
-3. Configure:
-   - **Container Port**: `3001` (default)
-   - **Environment Variables**: `PORT=3001`, `NODE_ENV=production`
-4. Gere um domínio (ex: `api.seudominio.com`)
-5. Deploy
-
-### 2. Deploy do Frontend
-
-1. Crie uma nova Application no Dokploy
-2. Aponte para o repositório com **Build Path**: `/frontend`
-3. Configure:
-   - **Container Port**: `5175`
-   - **Build Args**: `VITE_API_URL=https://api.seudominio.com` (URL do backend)
-4. Gere um domínio (ex: `crop.seudominio.com`)
-5. Deploy
-
-## Desenvolvimento Local
-
-### Backend
+## Quick Start
 
 ```bash
+# Clone
+git clone https://github.com/coelhomarcus/image-cropper
+
+# Backend (requer gifsicle instalado)
 cd backend
 npm install
 npm run dev
-```
 
-### Frontend
-
-```bash
+# Frontend (em outro terminal)
 cd frontend
 npm install
-
-# Crie um .env.local com:
-# VITE_API_URL=http://localhost:3001
-
 npm run dev
 ```
 
-## Funcionalidades
+## Deploy (Docker)
 
-- ✅ Recorte de imagens (PNG, JPG, WebP)
-- ✅ Recorte de GIFs animados (preserva animação)
-- ✅ Preview em tempo real
-- ✅ Download do resultado
+```bash
+docker build -t image-cropper .
+docker run -p 3002:3002 image-cropper
+```
+
+O Express serve tanto a API (`/api/gif/*`) quanto o frontend estático em uma porta só.

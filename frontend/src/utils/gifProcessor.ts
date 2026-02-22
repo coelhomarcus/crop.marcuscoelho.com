@@ -7,8 +7,6 @@ export interface GifProcessingOptions {
   skipFrames?: number;
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "";
-
 export async function cropGif(
   image: HTMLImageElement,
   crop: PixelCrop,
@@ -35,7 +33,7 @@ export async function cropGif(
 
   onProgress?.(0.1);
 
-  const response = await fetch(`${API_URL}/api/gif/crop`, {
+  const response = await fetch("/api/gif/crop", {
     method: "POST",
     body: formData,
   });
