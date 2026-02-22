@@ -2,79 +2,22 @@
 
 Ferramenta simples para recortar imagens e GIFs animados.
 
-## Estrutura do Projeto
-
-Este repositório contém dois projetos independentes:
-
-```
-Crop/
-├── frontend/    # Interface web (React + Vite)
-└── backend/     # API de processamento de GIFs (Node.js + Express)
-```
-
-### Frontend
-
-Interface web para upload e recorte de imagens e GIFs.
-
-- **Tecnologias**: React, Vite, TypeScript, Tailwind CSS
-- **Porta**: 5175 
-
-### Backend
-
-API para processamento e recorte de GIFs animados usando Gifsicle.
-
-- **Tecnologias**: Node.js, Express, TypeScript, Gifsicle
-- **Porta**: 3001
-
 ## Deploy no Dokploy
 
-Cada projeto deve ser deployado como uma **Application** separada:
-
-### 1. Deploy do Backend
-
-1. Crie uma nova Application no Dokploy
-2. Aponte para o repositório com **Build Path**: `/backend`
-3. Configure:
-   - **Container Port**: `3001` (default)
-   - **Environment Variables**: `PORT=3001`, `NODE_ENV=production`
-4. Gere um domínio (ex: `api.seudominio.com`)
-5. Deploy
-
-### 2. Deploy do Frontend
-
-1. Crie uma nova Application no Dokploy
-2. Aponte para o repositório com **Build Path**: `/frontend`
-3. Configure:
-   - **Container Port**: `5175`
-   - **Build Args**: `VITE_API_URL=https://api.seudominio.com` (URL do backend)
-4. Gere um domínio (ex: `crop.seudominio.com`)
-5. Deploy
+1. Crie uma Application apontando para o repositório
+2. Configure **Container Port**: `3002`
+3. Deploy
 
 ## Desenvolvimento Local
 
-### Backend
-
 ```bash
+# Backend (requer gifsicle instalado)
 cd backend
 npm install
 npm run dev
-```
 
-### Frontend
-
-```bash
+# Frontend (em outro terminal)
 cd frontend
 npm install
-
-# Crie um .env.local com:
-# VITE_API_URL=http://localhost:3001
-
 npm run dev
 ```
-
-## Funcionalidades
-
-- ✅ Recorte de imagens (PNG, JPG, WebP)
-- ✅ Recorte de GIFs animados (preserva animação)
-- ✅ Preview em tempo real
-- ✅ Download do resultado
