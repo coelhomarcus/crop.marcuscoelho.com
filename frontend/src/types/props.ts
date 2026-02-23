@@ -1,4 +1,4 @@
-import type { GifSettings, PreviewResult } from "./crop";
+import type { GifSettings, PreviewResult, OutputFormat } from "./crop";
 
 export type AspectRatioKey =
   | "Livre"
@@ -52,6 +52,11 @@ export interface CropSidebarProps {
 
   onReset: () => void;
 
+  outputFormat: OutputFormat;
+  onOutputFormatChange: (format: OutputFormat) => void;
+  outputQuality: number;
+  onOutputQualityChange: (quality: number) => void;
+
   gifSettings: GifSettings;
   setGifSettings: (settings: GifSettings) => void;
   showGifSettings: boolean;
@@ -66,6 +71,8 @@ export interface CropSidebarProps {
 export interface CropPreviewModalProps {
   preview: PreviewResult;
   originalSize: number;
+  fileName: string;
+  onFileNameChange: (name: string) => void;
   onClose: () => void;
   onDownload: () => void;
 }

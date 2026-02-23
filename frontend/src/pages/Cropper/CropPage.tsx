@@ -4,8 +4,8 @@ import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { Upload } from "lucide-react";
 
-import { getCroppedImage, getFileExtension } from "@/utils/imageProcessor";
-import { cropGif, formatFileSize } from "@/utils/gifProcessor";
+import { getCroppedImage, getExtensionForMime } from "@/utils/imageProcessor";
+import { cropGif, formatFileSize, isAnimatedWebP } from "@/utils/gifProcessor";
 import { ASPECT_RATIOS, DEFAULT_GIF_SETTINGS } from "@/utils/constants";
 
 import {
@@ -27,6 +27,7 @@ import type {
   GifSettings,
   PreviewResult,
   AspectRatioKey,
+  OutputFormat,
 } from "@/types";
 
 export function CropPage() {
@@ -57,6 +58,9 @@ export function CropPage() {
     ...DEFAULT_GIF_SETTINGS,
   });
   const [showGifSettings, setShowGifSettings] = useState(false);
+
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>("original");
+  const [outputQuality, setOutputQuality] = useState(0.95);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -92,10 +96,10 @@ export function CropPage() {
     setImageSrc(session.image);
     setFileName(session.fileName.replace(/\.[^/.]+$/, "") || "cropped");
     setFileType(session.fileType);
-    setIsGif(session.fileType === "image/gif");
     setOriginalSize(session.fileSize);
 
     if (session.fileType === "image/gif") {
+      setIsGif(true);
       fetch(session.image)
         .then((res) => res.blob())
         .then((blob) => {
@@ -103,6 +107,20 @@ export function CropPage() {
             type: "image/gif",
           });
         });
+    } else if (session.fileType === "image/webp") {
+      fetch(session.image)
+        .then((res) => res.blob())
+        .then(async (blob) => {
+          const file = new File([blob], session.fileName || "image.webp", {
+            type: "image/webp",
+          });
+          if (await isAnimatedWebP(file)) {
+            setIsGif(true);
+            fileRef.current = file;
+          }
+        });
+    } else {
+      setIsGif(false);
     }
   }, [navigate]);
 
@@ -305,11 +323,10 @@ export function CropPage() {
 
   // --- Image loading (drag-drop replace) ---
 
-  const loadNewImage = useCallback((file: File) => {
+  const loadNewImage = useCallback(async (file: File) => {
     if (!file.type.startsWith("image/")) return;
 
     setFileType(file.type);
-    setIsGif(file.type === "image/gif");
     setOriginalSize(file.size);
     setFileName(file.name.replace(/\.[^/.]+$/, ""));
 
@@ -319,9 +336,16 @@ export function CropPage() {
     setWidthInput("");
     setHeightInput("");
     setGifSettings({ ...DEFAULT_GIF_SETTINGS });
+    setOutputFormat("original");
+    setOutputQuality(0.95);
 
-    if (file.type === "image/gif") {
+    const animated = file.type === "image/gif" || await isAnimatedWebP(file);
+    setIsGif(animated);
+
+    if (animated) {
       fileRef.current = file;
+    } else {
+      fileRef.current = null;
     }
 
     const reader = new FileReader();
@@ -339,6 +363,18 @@ export function CropPage() {
     onFileDrop: loadNewImage,
   });
 
+  // --- Output format handlers ---
+
+  const handleOutputFormatChange = (format: OutputFormat) => {
+    setOutputFormat(format);
+    setPreview(null);
+  };
+
+  const handleOutputQualityChange = (quality: number) => {
+    setOutputQuality(quality);
+    setPreview(null);
+  };
+
   // --- Reset & clear ---
 
   const handleReset = () => {
@@ -351,6 +387,8 @@ export function CropPage() {
     setCrop(undefined);
     setCompletedCrop(undefined);
     setPreview(null);
+    setOutputFormat("original");
+    setOutputQuality(0.95);
   };
 
   const handleClearImage = () => {
@@ -371,14 +409,20 @@ export function CropPage() {
     try {
       let result;
 
-      if (isGif && fileRef.current) {
+      if (isGif && fileRef.current && outputFormat === "original") {
         result = await cropGif(imgRef.current, completedCrop, fileRef.current, {
           onProgress: (p) => setProcessingProgress(p),
           colors: gifSettings.colors,
           skipFrames: gifSettings.skipFrames,
         });
       } else {
-        result = await getCroppedImage(imgRef.current, completedCrop, fileType);
+        result = await getCroppedImage(
+          imgRef.current,
+          completedCrop,
+          fileType,
+          outputFormat,
+          outputQuality,
+        );
       }
 
       setPreview({
@@ -397,10 +441,12 @@ export function CropPage() {
 
   const downloadResult = () => {
     if (!preview) return;
-    const ext = isGif ? "gif" : getFileExtension(fileType);
+    const resolvedType =
+      !outputFormat || outputFormat === "original" ? fileType : outputFormat;
+    const ext = getExtensionForMime(resolvedType);
     const name = fileName || "cropped";
     const link = document.createElement("a");
-    link.download = `${name} [crop.marcuscoelho.com].${ext}`;
+    link.download = `${name}.${ext}`;
     link.href = preview.url;
     link.click();
   };
@@ -452,6 +498,10 @@ export function CropPage() {
           onCropXChange={handleCropXChange}
           onCropYChange={handleCropYChange}
           onReset={handleReset}
+          outputFormat={outputFormat}
+          onOutputFormatChange={handleOutputFormatChange}
+          outputQuality={outputQuality}
+          onOutputQualityChange={handleOutputQualityChange}
           gifSettings={gifSettings}
           setGifSettings={setGifSettings}
           showGifSettings={showGifSettings}
@@ -496,6 +546,8 @@ export function CropPage() {
         <CropPreviewModal
           preview={preview}
           originalSize={originalSize}
+          fileName={fileName}
+          onFileNameChange={setFileName}
           onClose={() => setPreview(null)}
           onDownload={downloadResult}
         />

@@ -1,4 +1,4 @@
-export type { Crop, PixelCrop, GifSettings, PreviewResult } from "./crop";
+export type { Crop, PixelCrop, GifSettings, PreviewResult, OutputFormat } from "./crop";
 export type {
   AspectRatioKey,
   CropHeaderProps,

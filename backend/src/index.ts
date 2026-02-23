@@ -2,7 +2,9 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import gifRoutes from "./routes/gif.js";
+import animatedRoutes from "./routes/animated.js";
 import { checkGifsicle } from "./services/gifsicle.js";
+import { checkFfmpeg } from "./services/ffmpeg.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FRONTEND_DIR = path.join(__dirname, "../../frontend/dist");
@@ -13,6 +15,7 @@ const PORT = process.env.PORT || 3002;
 app.use(express.json());
 
 app.use("/api/gif", gifRoutes);
+app.use("/api/animated", animatedRoutes);
 
 app.use(express.static(FRONTEND_DIR));
 
@@ -23,6 +26,9 @@ app.get("*path", (_req, res) => {
 async function start() {
   const gifsicleAvailable = await checkGifsicle();
   if (!gifsicleAvailable) console.error("⚠️  gifsicle not found!");
+
+  const ffmpegAvailable = await checkFfmpeg();
+  if (!ffmpegAvailable) console.error("⚠️  ffmpeg not found! Animated WebP cropping will not work.");
 
   app.listen(PORT, () => {
     console.log(`🚀 Crop Backend running on http://localhost:${PORT}`);

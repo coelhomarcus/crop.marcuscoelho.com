@@ -11,4 +11,6 @@ export interface PreviewResult {
   sizeFormatted: string;
 }
 
+export type OutputFormat = "original" | "image/png" | "image/jpeg" | "image/webp" | "image/avif" | "image/bmp";
+
 export type { Crop, PixelCrop };

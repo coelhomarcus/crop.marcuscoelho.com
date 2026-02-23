@@ -31,7 +31,7 @@ export function CropHeader({
           <span
             className={`px-2 py-1 text-xs font-medium ${isGif ? "bg-purple-500/20 text-purple-400" : "bg-blue-500/20 text-blue-400"}`}
           >
-            {isGif ? "GIF" : fileType.split("/")[1]?.toUpperCase() || "IMG"}
+            {fileType.split("/")[1]?.toUpperCase() || "IMG"}
           </span>
           <span className="px-2 py-1 text-xs font-medium bg-[#141414] text-[#888888]">
             {imageWidth} × {imageHeight}
