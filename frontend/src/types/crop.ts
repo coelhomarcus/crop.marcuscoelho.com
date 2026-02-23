@@ -1,7 +1,6 @@
 import type { Crop, PixelCrop } from "react-image-crop";
 
 export interface GifSettings {
-  colors: number;
   skipFrames: number;
 }
 
@@ -10,5 +9,7 @@ export interface PreviewResult {
   size: number;
   sizeFormatted: string;
 }
+
+export type OutputFormat = "original" | "image/png" | "image/jpeg" | "image/webp" | "image/avif" | "image/bmp";
 
 export type { Crop, PixelCrop };

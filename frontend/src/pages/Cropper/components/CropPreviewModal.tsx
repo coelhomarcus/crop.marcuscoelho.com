@@ -1,10 +1,12 @@
-import { X, Download, FileImage, FileDown } from "lucide-react";
+import { X, Download, FileImage, FileDown, Pencil } from "lucide-react";
 import { formatFileSize } from "@/utils/gifProcessor";
 import type { CropPreviewModalProps } from "@/types";
 
 export function CropPreviewModal({
   preview,
   originalSize,
+  fileName,
+  onFileNameChange,
   onClose,
   onDownload,
 }: CropPreviewModalProps) {
@@ -55,6 +57,22 @@ export function CropPreviewModal({
                 <span className="text-xs md:text-sm font-semibold text-green-300">
                   {preview.sizeFormatted}
                 </span>
+              </div>
+            </div>
+
+            <div className="w-full">
+              <label className="flex items-center gap-1 text-[#666666] text-xs mb-1.5">
+                <Pencil className="size-3 text-[#666666] shrink-0" /> Nome do
+                arquivo
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={fileName}
+                  onChange={(e) => onFileNameChange(e.target.value)}
+                  className="dark-input w-full"
+                  placeholder="cropped"
+                />
               </div>
             </div>
 

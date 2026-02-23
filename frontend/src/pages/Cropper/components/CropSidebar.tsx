@@ -1,14 +1,12 @@
 import {
   X,
   RotateCcw,
-  ChevronDown,
-  Settings,
   Crop as CropIcon,
   Loader2,
 } from "lucide-react";
 import { ASPECT_RATIOS } from "@/utils/constants";
 import { formatFileSize } from "@/utils/gifProcessor";
-import type { CropSidebarProps, AspectRatioKey } from "@/types";
+import type { CropSidebarProps, AspectRatioKey, OutputFormat } from "@/types";
 
 export function CropSidebar({
   isOpen,
@@ -35,10 +33,8 @@ export function CropSidebar({
   onCropXChange,
   onCropYChange,
   onReset,
-  gifSettings,
-  setGifSettings,
-  showGifSettings,
-  setShowGifSettings,
+  outputFormat,
+  onOutputFormatChange,
   isProcessing,
   processingProgress,
   canGenerate,
@@ -79,7 +75,7 @@ export function CropSidebar({
             <span
               className={`px-2 py-1 text-xs font-medium ${isGif ? "bg-purple-500/20 text-purple-400" : "bg-blue-500/20 text-blue-400"}`}
             >
-              {isGif ? "GIF" : fileType.split("/")[1]?.toUpperCase() || "IMG"}
+              {fileType.split("/")[1]?.toUpperCase() || "IMG"}
             </span>
             <span className="px-2 py-1 text-xs font-medium bg-[#141414] text-[#888888]">
               {imageWidth} × {imageHeight}
@@ -198,6 +194,43 @@ export function CropSidebar({
             </div>
           </section>
 
+          <section>
+            <h3 className="text-[#ededed] font-medium text-sm mb-3">
+              Formato de Saída
+            </h3>
+            <select
+              value={outputFormat}
+              onChange={(e) => onOutputFormatChange(e.target.value as OutputFormat)}
+              className="dark-select w-full"
+            >
+              <option value="original">
+                Original ({fileType.split("/")[1]?.toUpperCase() || "IMG"})
+              </option>
+              <option value="image/png">
+                PNG{isGif ? " (primeiro frame)" : ""}
+              </option>
+              <option value="image/jpeg">
+                JPEG{isGif ? " (primeiro frame)" : ""}
+              </option>
+              <option value="image/webp">
+                WebP{isGif ? " (primeiro frame)" : ""}
+              </option>
+              <option value="image/avif">
+                AVIF{isGif ? " (primeiro frame)" : ""}
+              </option>
+              <option value="image/bmp">
+                BMP{isGif ? " (primeiro frame)" : ""}
+              </option>
+            </select>
+
+            {isGif && outputFormat !== "original" && (
+              <p className="text-yellow-500/80 text-xs mt-2">
+                A animação será perdida
+              </p>
+            )}
+
+          </section>
+
           <button
             onClick={onReset}
             className="w-full py-2 px-4 bg-[#141414] hover:bg-[#1a1a1a] text-[#888888] text-sm font-medium transition-colors flex items-center justify-center gap-2"
@@ -206,45 +239,7 @@ export function CropSidebar({
             Resetar
           </button>
 
-          {isGif && (
-            <section className="border-t border-[#262626] pt-4">
-              <button
-                onClick={() => setShowGifSettings(!showGifSettings)}
-                className="flex items-center gap-2 text-sm text-[#888888] hover:text-[#ededed] w-full"
-              >
-                <Settings className="w-4 h-4" />
-                Configurações do GIF
-                <ChevronDown
-                  className={`w-4 h-4 ml-auto transition-transform ${showGifSettings ? "rotate-180" : ""}`}
-                />
-              </button>
-              {showGifSettings && (
-                <div className="mt-3">
-                  <label className="block text-[#666666] text-xs mb-2">
-                    Cores: {gifSettings.colors}
-                  </label>
-                  <input
-                    type="range"
-                    min="16"
-                    max="256"
-                    step="16"
-                    value={gifSettings.colors}
-                    onChange={(e) =>
-                      setGifSettings({
-                        ...gifSettings,
-                        colors: parseInt(e.target.value),
-                      })
-                    }
-                    className="w-full accent-[#3b82f6]"
-                  />
-                  <div className="flex justify-between text-xs text-[#666666] mt-1">
-                    <span>16 (pequeno)</span>
-                    <span>256 (qualidade)</span>
-                  </div>
-                </div>
-              )}
-            </section>
-          )}
+
         </div>
 
         <div className="p-4 border-t border-[#262626]">

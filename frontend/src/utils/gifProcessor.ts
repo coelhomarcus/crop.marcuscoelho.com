@@ -33,7 +33,7 @@ export async function cropGif(
 
   onProgress?.(0.1);
 
-  const response = await fetch("/api/gif/crop", {
+  const response = await fetch("/api/animated/crop", {
     method: "POST",
     body: formData,
   });
@@ -57,6 +57,27 @@ export async function cropGif(
 
 export function isGifFile(file: File): boolean {
   return file.type === "image/gif";
+}
+
+export async function isAnimatedWebP(file: File): Promise<boolean> {
+  if (file.type !== "image/webp") return false;
+
+  const buffer = await file.slice(0, Math.min(file.size, 65536)).arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+
+  // Search for "ANIM" chunk which indicates animated WebP
+  for (let i = 0; i < bytes.length - 4; i++) {
+    if (
+      bytes[i] === 0x41 &&     // A
+      bytes[i + 1] === 0x4e && // N
+      bytes[i + 2] === 0x49 && // I
+      bytes[i + 3] === 0x4d    // M
+    ) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 export function formatFileSize(bytes: number): string {

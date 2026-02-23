@@ -1,4 +1,5 @@
 import type { PixelCrop } from "react-image-crop";
+import type { OutputFormat } from "@/types";
 
 export interface CropResult {
   blob: Blob;
@@ -9,6 +10,8 @@ export function getCroppedImage(
   image: HTMLImageElement,
   crop: PixelCrop,
   imageType: string,
+  outputFormat?: OutputFormat,
+  outputQuality?: number,
 ): Promise<CropResult> {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement("canvas");
@@ -40,6 +43,14 @@ export function getCroppedImage(
       actualHeight,
     );
 
+    const resolvedType = (!outputFormat || outputFormat === "original")
+      ? imageType
+      : outputFormat;
+
+    const resolvedQuality = (resolvedType === "image/png" || resolvedType === "image/bmp")
+      ? undefined
+      : (outputQuality ?? 0.95);
+
     canvas.toBlob(
       (blob) => {
         if (!blob) {
@@ -49,8 +60,8 @@ export function getCroppedImage(
         const url = URL.createObjectURL(blob);
         resolve({ blob, url });
       },
-      imageType,
-      0.95,
+      resolvedType,
+      resolvedQuality,
     );
   });
 }
@@ -65,4 +76,17 @@ export function downloadBlob(url: string, filename: string): void {
 
 export function getFileExtension(imageType: string): string {
   return imageType.split("/")[1] || "png";
+}
+
+const MIME_TO_EXT: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/avif": "avif",
+  "image/bmp": "bmp",
+};
+
+export function getExtensionForMime(mime: string): string {
+  return MIME_TO_EXT[mime] || "png";
 }
