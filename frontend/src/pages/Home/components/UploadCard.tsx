@@ -27,7 +27,7 @@ export function UploadCard({ fileInputRef, onFileSelect }: UploadCardProps) {
         </p>
         <div className="flex items-center justify-center gap-2 text-xs text-[#666666]">
           <Image className="w-4 h-4" />
-          <span>PNG, JPG, GIF, WebP</span>
+          <span>PNG, JPG, GIF, WebP, AVIF, BMP</span>
         </div>
       </label>
     </div>

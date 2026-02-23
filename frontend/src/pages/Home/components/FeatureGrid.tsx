@@ -20,9 +20,18 @@ function FeatureItem({ icon, title }: FeatureItemProps) {
 export function FeatureGrid() {
   return (
     <div className="mt-6 md:mt-8 grid grid-cols-3 gap-2 md:gap-4 select-none">
-      <FeatureItem icon={<Scissors className="w-6 h-6 md:w-7 md:h-7" />} title="Recorte preciso" />
-      <FeatureItem icon={<Ratio className="w-6 h-6 md:w-7 md:h-7" />} title="Aspect Ratio" />
-      <FeatureItem icon={<Film className="w-6 h-6 md:w-7 md:h-7" />} title="Suporte a GIF" />
+      <FeatureItem
+        icon={<Scissors className="w-6 h-6 md:w-7 md:h-7" />}
+        title="Recorte preciso"
+      />
+      <FeatureItem
+        icon={<Ratio className="w-6 h-6 md:w-7 md:h-7" />}
+        title="Aspect Ratio"
+      />
+      <FeatureItem
+        icon={<Film className="w-6 h-6 md:w-7 md:h-7" />}
+        title="Suporte a GIF/WebP"
+      />
     </div>
   );
 }

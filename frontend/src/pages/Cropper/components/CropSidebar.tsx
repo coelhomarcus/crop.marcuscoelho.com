@@ -37,8 +37,6 @@ export function CropSidebar({
   onReset,
   outputFormat,
   onOutputFormatChange,
-  outputQuality,
-  onOutputQualityChange,
   gifSettings,
   setGifSettings,
   showGifSettings,
@@ -237,29 +235,6 @@ export function CropSidebar({
               </p>
             )}
 
-            {(() => {
-              const resolved = outputFormat === "original" ? fileType : outputFormat;
-              return (resolved === "image/jpeg" || resolved === "image/webp" || resolved === "image/avif") ? (
-                <div className="mt-3">
-                  <label className="block text-[#666666] text-xs mb-2">
-                    Qualidade: {Math.round(outputQuality * 100)}%
-                  </label>
-                  <input
-                    type="range"
-                    min="0.1"
-                    max="1.0"
-                    step="0.05"
-                    value={outputQuality}
-                    onChange={(e) => onOutputQualityChange(parseFloat(e.target.value))}
-                    className="w-full accent-[#3b82f6]"
-                  />
-                  <div className="flex justify-between text-xs text-[#666666] mt-1">
-                    <span>10% (pequeno)</span>
-                    <span>100% (qualidade)</span>
-                  </div>
-                </div>
-              ) : null;
-            })()}
           </section>
 
           <button

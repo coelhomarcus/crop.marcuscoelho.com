@@ -60,7 +60,6 @@ export function CropPage() {
   const [showGifSettings, setShowGifSettings] = useState(false);
 
   const [outputFormat, setOutputFormat] = useState<OutputFormat>("original");
-  const [outputQuality, setOutputQuality] = useState(0.95);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -337,7 +336,6 @@ export function CropPage() {
     setHeightInput("");
     setGifSettings({ ...DEFAULT_GIF_SETTINGS });
     setOutputFormat("original");
-    setOutputQuality(0.95);
 
     const animated = file.type === "image/gif" || await isAnimatedWebP(file);
     setIsGif(animated);
@@ -370,11 +368,6 @@ export function CropPage() {
     setPreview(null);
   };
 
-  const handleOutputQualityChange = (quality: number) => {
-    setOutputQuality(quality);
-    setPreview(null);
-  };
-
   // --- Reset & clear ---
 
   const handleReset = () => {
@@ -388,7 +381,6 @@ export function CropPage() {
     setCompletedCrop(undefined);
     setPreview(null);
     setOutputFormat("original");
-    setOutputQuality(0.95);
   };
 
   const handleClearImage = () => {
@@ -421,7 +413,6 @@ export function CropPage() {
           completedCrop,
           fileType,
           outputFormat,
-          outputQuality,
         );
       }
 
@@ -500,8 +491,6 @@ export function CropPage() {
           onReset={handleReset}
           outputFormat={outputFormat}
           onOutputFormatChange={handleOutputFormatChange}
-          outputQuality={outputQuality}
-          onOutputQualityChange={handleOutputQualityChange}
           gifSettings={gifSettings}
           setGifSettings={setGifSettings}
           showGifSettings={showGifSettings}

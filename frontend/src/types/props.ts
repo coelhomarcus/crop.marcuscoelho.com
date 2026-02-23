@@ -54,8 +54,6 @@ export interface CropSidebarProps {
 
   outputFormat: OutputFormat;
   onOutputFormatChange: (format: OutputFormat) => void;
-  outputQuality: number;
-  onOutputQualityChange: (quality: number) => void;
 
   gifSettings: GifSettings;
   setGifSettings: (settings: GifSettings) => void;
